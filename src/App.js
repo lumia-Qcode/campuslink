@@ -6,6 +6,7 @@ import Signup from "./components/Signup";
 import Navbar from "./components/Navbar";
 import StudentDashboard from "./pages/student/Dashboard";
 import MarksPage from "./pages/student/Marks";
+import Attendance from "./pages/student/Attendance";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/navbar" element={<Navbar />} />
         <Route path="/student-dashboard" element={<StudentDashboard />} />
         <Route path="/marks" element={<MarksPage />} />
+        <Route path="/attendance" element={<Attendance />} />
       </Routes>
     </Router>
   );
