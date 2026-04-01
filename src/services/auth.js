@@ -1,28 +1,54 @@
-// Mock user database
-let users = [
-  { email: "student@test.com", password: "123456" }
-];
+export const login = (email, password) => {
+  // Check stored user (from signup)
+  const storedUser = JSON.parse(localStorage.getItem("user"));
 
-
-export function signup(email, password) {
-  const userExists = users.find(user => user.email === email);
-  
-  if (userExists) {
-    return { success: false, message: "User already exists" };
+  if (storedUser && storedUser.email === email && storedUser.password === password) {
+    return true;
   }
 
-  users.push({ email, password });
-  return { success: true };
-}
+  // Default test user
+  if (email === "student@test.com" && password === "1234") {
+    const user = {
+      email,
+      role: "student",
+      name: "Ali Ahmed",
+      class: "10",
+      section: "A"
+    };
 
-export function login(email, password) {
-  const user = users.find(
-    user => user.email === email && user.password === password
-  );
-
-  if (user) {
-    return { success: true };
-  } else {
-    return { success: false, message: "Invalid credentials" };
+    localStorage.setItem("user", JSON.stringify(user));
+    return true;
   }
-}
+
+  return false;
+};
+
+export const signup = (email, password) => {
+  const user = {
+    email,
+    password,
+    role: "student",
+    name: "Student User",
+    class: "1",
+    section: "A"
+  };
+
+  localStorage.setItem("user", JSON.stringify(user));
+};
+
+export const logout = () => {
+  localStorage.removeItem("user");
+};
+
+export const isAuthenticated = () => {
+  return localStorage.getItem("user") !== null;
+};
+
+export const getUser = () => {
+  return JSON.parse(localStorage.getItem("user"));
+};
+
+export const getUserRole = () => {
+  const user = getUser();
+  return user ? user.role : null;
+};
