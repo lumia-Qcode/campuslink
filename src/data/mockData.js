@@ -80,11 +80,9 @@ export const activities = [
   { activity: "Art Society", participation: "Member" },
 ];
 
-export const materials = [
-  { title: "Chapter 5 - Algebra Notes", subject: "Maths", date: "2026-03-20" },
-  { title: "Essay Writing Guide", subject: "English", date: "2026-03-18" },
-  { title: "Computer Science - OOP Basics", subject: "Computer", date: "2026-03-15" },
-];
+// Student materials list is intentionally empty —
+// all materials come from the teacher via teacherMaterials in teacherMockData.js
+export const materials = [];
 
 export const calendar = [
   { date: "2026-04-01", event: "Final Exams Begin" },
@@ -92,8 +90,6 @@ export const calendar = [
   { date: "2026-04-20", event: "Spring Break Starts" },
   { date: "2026-05-01", event: "Labour Day Holiday" },
 ];
-
-// src/data/mockData.js
 
 export const timetable = [
   {
