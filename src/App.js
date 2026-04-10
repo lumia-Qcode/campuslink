@@ -1,9 +1,11 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/Login";
-import StudentDashboard from "./pages/student/Dashboard";
-import { isAuthenticated, getUserRole } from "./services/auth";
 import Signup from "./components/Signup";
+import { isAuthenticated, getUserRole } from "./services/auth";
+
+// Student Pages
+import StudentDashboard from "./pages/student/Dashboard";
 import Announcements from "./pages/student/Announcements";
 import Attendance from "./pages/student/Attendance";
 import Marks from "./pages/student/Marks";
@@ -12,17 +14,22 @@ import Fees from "./pages/student/Fees";
 import Activities from "./pages/student/Activities";
 import Materials from "./pages/student/Materials";
 import Calendar from "./pages/student/Calendar";
+
+// Teacher Pages
+import TeacherDashboard from "./pages/teacher/TeacherDashboard";
+import TeacherAttendance from "./pages/teacher/TeacherAttendance";
+import TeacherMarks from "./pages/teacher/TeacherMarks";
+import TeacherTimetable from "./pages/teacher/TeacherTimeTable";
+import TeacherMaterials from "./pages/teacher/TeacherMaterials";
+import TeacherAnnouncements from "./pages/teacher/TeacherAnnouncement";
+import TeacherStudents from "./pages/teacher/TeacherStudents";
+import TeacherCalendar from "./pages/teacher/TeacherCalendar";
+
 import './index.css';
 
 const ProtectedRoute = ({ children, role }) => {
-  if (!isAuthenticated()) {
-    return <Navigate to="/" />;
-  }
-
-  if (role && getUserRole() !== role) {
-    return <Navigate to="/" />;
-  }
-
+  if (!isAuthenticated()) return <Navigate to="/" />;
+  if (role && getUserRole() !== role) return <Navigate to="/" />;
   return children;
 };
 
@@ -30,72 +37,30 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Auth */}
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/student/dashboard"
-           element={
-            <ProtectedRoute role="student">
-              <StudentDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/student/announcements"
-           element={
-            <ProtectedRoute role="student">
-              <Announcements />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/student/attendance"
-           element={
-            <ProtectedRoute role="student">
-              <Attendance />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/student/marks"
-           element={
-            <ProtectedRoute role="student">
-              <Marks />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/student/timetable"
-           element={
-            <ProtectedRoute role="student">
-              <Timetable />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/student/fees"
-           element={
-            <ProtectedRoute role="student">
-              <Fees />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/student/activities"
-           element={
-            <ProtectedRoute role="student">
-              <Activities />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/student/materials"
-           element={
-            <ProtectedRoute role="student">
-              <Materials />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/student/calendar"
-           element={
-            <ProtectedRoute role="student">
-              <Calendar />
-            </ProtectedRoute>
-          }
-        />
 
+        {/* ─── STUDENT ROUTES ─── */}
+        <Route path="/student/dashboard"     element={<ProtectedRoute role="student"><StudentDashboard /></ProtectedRoute>} />
+        <Route path="/student/announcements" element={<ProtectedRoute role="student"><Announcements /></ProtectedRoute>} />
+        <Route path="/student/attendance"    element={<ProtectedRoute role="student"><Attendance /></ProtectedRoute>} />
+        <Route path="/student/marks"         element={<ProtectedRoute role="student"><Marks /></ProtectedRoute>} />
+        <Route path="/student/timetable"     element={<ProtectedRoute role="student"><Timetable /></ProtectedRoute>} />
+        <Route path="/student/fees"          element={<ProtectedRoute role="student"><Fees /></ProtectedRoute>} />
+        <Route path="/student/activities"    element={<ProtectedRoute role="student"><Activities /></ProtectedRoute>} />
+        <Route path="/student/materials"     element={<ProtectedRoute role="student"><Materials /></ProtectedRoute>} />
+        <Route path="/student/calendar"      element={<ProtectedRoute role="student"><Calendar /></ProtectedRoute>} />
+
+        {/* ─── TEACHER ROUTES ─── */}
+        <Route path="/teacher/dashboard"     element={<ProtectedRoute role="teacher"><TeacherDashboard /></ProtectedRoute>} />
+        <Route path="/teacher/attendance"    element={<ProtectedRoute role="teacher"><TeacherAttendance /></ProtectedRoute>} />
+        <Route path="/teacher/marks"         element={<ProtectedRoute role="teacher"><TeacherMarks /></ProtectedRoute>} />
+        <Route path="/teacher/timetable"     element={<ProtectedRoute role="teacher"><TeacherTimetable /></ProtectedRoute>} />
+        <Route path="/teacher/materials"     element={<ProtectedRoute role="teacher"><TeacherMaterials /></ProtectedRoute>} />
+        <Route path="/teacher/announcements" element={<ProtectedRoute role="teacher"><TeacherAnnouncements /></ProtectedRoute>} />
+        <Route path="/teacher/students"      element={<ProtectedRoute role="teacher"><TeacherStudents /></ProtectedRoute>} />
+        <Route path="/teacher/calendar"      element={<ProtectedRoute role="teacher"><TeacherCalendar /></ProtectedRoute>} />
       </Routes>
     </Router>
   );
