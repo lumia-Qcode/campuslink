@@ -2202,7 +2202,6 @@ body {
   .teacher-sidebar.open {
     transform: translateX(0);
   }
-<<<<<<< HEAD
 }
 /* ═══════════════════════════════════════════════════════════
    ADMIN PORTAL — CSS ADDITIONS
@@ -2305,6 +2304,3 @@ body {
   gap: 8px;
 }
 
-=======
-}
->>>>>>> 4370ac5c8f400b72d7a2cdf2f135e7e8656aa118
