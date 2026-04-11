@@ -15,19 +15,6 @@ import Activities from "./pages/student/Activities";
 import Materials from "./pages/student/Materials";
 import Calendar from "./pages/student/Calendar";
 
-<<<<<<< HEAD
-// Admin Pages
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminStudents from "./pages/admin/AdminStudents";
-import AdminTeachers from "./pages/admin/AdminTeachers";
-import AdminSections from "./pages/admin/AdminSections";
-import AdminFees from "./pages/admin/AdminFees";
-import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
-import AdminTimetable from "./pages/admin/AdminTimetable";
-import AdminFinancialAid from "./pages/admin/AdminFinancialAid";
-
-=======
->>>>>>> 4370ac5c8f400b72d7a2cdf2f135e7e8656aa118
 // Teacher Pages
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 import TeacherAttendance from "./pages/teacher/TeacherAttendance";
@@ -37,6 +24,16 @@ import TeacherMaterials from "./pages/teacher/TeacherMaterials";
 import TeacherAnnouncements from "./pages/teacher/TeacherAnnouncement";
 import TeacherStudents from "./pages/teacher/TeacherStudents";
 import TeacherCalendar from "./pages/teacher/TeacherCalendar";
+
+// Admin Pages
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminStudents from "./pages/admin/AdminStudents";
+import AdminTeachers from "./pages/admin/AdminTeachers";
+import AdminSections from "./pages/admin/AdminSections";
+import AdminFees from "./pages/admin/AdminFees";
+import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
+import AdminTimetable from "./pages/admin/AdminTimetable";
+import AdminFinancialAid from "./pages/admin/AdminFinancialAid";
 
 import './index.css';
 
@@ -65,7 +62,6 @@ function App() {
         <Route path="/student/materials"     element={<ProtectedRoute role="student"><Materials /></ProtectedRoute>} />
         <Route path="/student/calendar"      element={<ProtectedRoute role="student"><Calendar /></ProtectedRoute>} />
 
-<<<<<<< HEAD
         {/* ─── ADMIN ROUTES ─── */}
         <Route path="/admin/dashboard"     element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
         <Route path="/admin/students"      element={<ProtectedRoute role="admin"><AdminStudents /></ProtectedRoute>} />
@@ -76,8 +72,6 @@ function App() {
         <Route path="/admin/timetable"     element={<ProtectedRoute role="admin"><AdminTimetable /></ProtectedRoute>} />
         <Route path="/admin/financial-aid" element={<ProtectedRoute role="admin"><AdminFinancialAid /></ProtectedRoute>} />
 
-=======
->>>>>>> 4370ac5c8f400b72d7a2cdf2f135e7e8656aa118
         {/* ─── TEACHER ROUTES ─── */}
         <Route path="/teacher/dashboard"     element={<ProtectedRoute role="teacher"><TeacherDashboard /></ProtectedRoute>} />
         <Route path="/teacher/attendance"    element={<ProtectedRoute role="teacher"><TeacherAttendance /></ProtectedRoute>} />
