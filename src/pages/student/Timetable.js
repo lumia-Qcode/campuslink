@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
-import { timetable } from "../../data/mockData";
+import { fetchTimetable } from "../../services/studentApi";
 
 const Icon = ({ d, size = 16, color }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -42,8 +42,15 @@ function SubjectIcon({ name }) {
 }
 
 function Timetable() {
-  const studentTimetable = timetable.find(t => t.class === 10 && t.section === "A");
-  const schedule = studentTimetable?.schedule || [];
+  const [schedule, setSchedule] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTimetable()
+      .then(data => setSchedule(data.schedule || []))
+      .catch(() => setSchedule([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   const [activeDay, setActiveDay] = useState(() => {
     const today = new Date(2026, 2, 15); // Sunday, March 15 2026

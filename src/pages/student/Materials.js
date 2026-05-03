@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
-import { materials as mockMaterials } from "../../data/mockData";
-import { teacherMaterials } from "../../data/teacherMockData";
-import { loadTeacherMaterials } from "../../services/sharedMaterials";
+import { fetchMaterials } from "../../services/studentApi";
 
 const Icon = ({ d, size = 18, color }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -46,18 +44,6 @@ function canEmbedUrl(url) {
   if (url.includes("drive.google.com")) return true;
   if (/\.pdf(\?|$)/i.test(url)) return true;
   return false;
-}
-
-function getMergedMaterials() {
-  // Load teacher-uploaded materials (persisted or from mock data)
-  const teacherUploads = loadTeacherMaterials(teacherMaterials).map(m => ({
-    ...m,
-    subject: normaliseSubject(m.subject),
-    _fromTeacher: true,
-  }));
-  // mockMaterials is now empty — only teacher uploads show for students
-  const studentMaterials = mockMaterials.map(m => ({ ...m, subject: normaliseSubject(m.subject) }));
-  return [...studentMaterials, ...teacherUploads];
 }
 
 function buildSubjectList(materials) {
@@ -257,9 +243,20 @@ function MaterialModal({ material, onClose }) {
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 function Materials() {
-  const [materials]   = useState(getMergedMaterials);
+  const [materials, setMaterials] = useState([]);
+  const [loading, setLoading]     = useState(true);
   const [activeFilter, setActiveFilter] = useState("All");
   const [openMaterial, setOpenMaterial] = useState(null);
+
+  useEffect(() => {
+    fetchMaterials()
+      .then(data => setMaterials((data.materials || []).map(m => ({
+        ...m,
+        subject: normaliseSubject(m.subject),
+      }))))
+      .catch(() => setMaterials([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   const ALL_SUBJECTS = buildSubjectList(materials);
 
@@ -280,7 +277,7 @@ function Materials() {
             </div>
             <div>
               <div className="page-title">Learning Materials</div>
-              <div className="page-subtitle">{materials.length} resources available</div>
+              <div className="page-subtitle">{loading ? "Loading..." : `${materials.length} resources available`}</div>
             </div>
           </div>
 
@@ -312,7 +309,7 @@ function Materials() {
                 filtered.map((mat, index) => {
                   const cfg = getSubjectConfig(mat.subject);
                   return (
-                    <div className="material-card" key={mat.id ?? index}>
+                    <div className="material-card" key={mat.id || index}>
                       <div className="material-card-top">
                         <div className={`material-icon-wrap ${cfg.iconClass}`}>
                           <Icon d={cfg.iconPath} size={22} color={cfg.iconColor} />

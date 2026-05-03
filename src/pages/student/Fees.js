@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
-import { fees } from "../../data/mockData";
+import { fetchFees } from "../../services/studentApi";
 
 const Icon = ({ d, size = 18, color }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -11,9 +11,33 @@ const Icon = ({ d, size = 18, color }) => (
 );
 
 function Fees() {
-  const studentFees = fees.find(f => f.studentId === 1);
+  const [feesData, setFeesData] = useState(null);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(null);
 
-  if (!studentFees) {
+  useEffect(() => {
+    fetchFees()
+      .then(data => setFeesData(data))
+      .catch(err  => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="app-layout">
+        <Navbar />
+        <main className="main-content">
+          <div className="page-wrapper">
+            <div className="card" style={{ textAlign: "center", padding: "48px 20px", color: "var(--text-muted)" }}>
+              Loading fee details...
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (error || !feesData) {
     return (
       <div className="app-layout">
         <Navbar />
@@ -24,7 +48,7 @@ function Fees() {
                 <Icon d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3z" size={28} color="#e6a800" />
               </div>
               <div className="discipline-empty-title">No Fee Record</div>
-              <div className="discipline-empty-sub">No fee information found for this student.</div>
+              <div className="discipline-empty-sub">{error || "No fee information found for this student."}</div>
             </div>
           </div>
         </main>
@@ -32,13 +56,13 @@ function Fees() {
     );
   }
 
-  const paidPct = Math.round((studentFees.paid / studentFees.total) * 100);
-  const isFullyPaid = studentFees.remaining === 0;
+  const paidPct    = Math.round((feesData.paid / feesData.total) * 100);
+  const isFullyPaid = feesData.remaining === 0;
 
   const feeRows = [
-    { label: "Total Fee",    value: `PKR ${studentFees.total.toLocaleString()}`,     valueClass: "",      dotColor: "#9aaabb" },
-    { label: "Amount Paid",  value: `PKR ${studentFees.paid.toLocaleString()}`,      valueClass: "green", dotColor: "#2db87b" },
-    { label: "Remaining",    value: `PKR ${studentFees.remaining.toLocaleString()}`, valueClass: studentFees.remaining > 0 ? "red" : "green", dotColor: studentFees.remaining > 0 ? "#ff5c5c" : "#2db87b" },
+    { label: "Total Fee",    value: `PKR ${feesData.total.toLocaleString()}`,     dotColor: "#9aaabb",  valueClass: "" },
+    { label: "Amount Paid",  value: `PKR ${feesData.paid.toLocaleString()}`,      dotColor: "#2db87b",  valueClass: "green" },
+    { label: "Remaining",    value: `PKR ${feesData.remaining.toLocaleString()}`, dotColor: feesData.remaining > 0 ? "#ff5c5c" : "#2db87b", valueClass: feesData.remaining > 0 ? "red" : "green" },
   ];
 
   return (
@@ -63,8 +87,8 @@ function Fees() {
             <div>
               {/* Summary hero card */}
               <div className="fee-summary-card">
-                <div className="fee-summary-label">Total Fee — {studentFees.challan}</div>
-                <div className="fee-summary-amount">PKR {studentFees.total.toLocaleString()}</div>
+                <div className="fee-summary-label">Total Fee — {feesData.challan}</div>
+                <div className="fee-summary-amount">PKR {feesData.total.toLocaleString()}</div>
                 <div className="fee-summary-badges">
                   <div className="fee-summary-chip">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -74,7 +98,7 @@ function Fees() {
                   </div>
                   <div className="fee-summary-chip">
                     <Icon d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" size={12} color="currentColor" />
-                    {studentFees.challan}
+                    {feesData.challan}
                   </div>
                 </div>
               </div>
@@ -106,7 +130,6 @@ function Fees() {
 
             {/* Right column: challan details */}
             <div className="challan-info-card">
-              {/* Status banner */}
               <div className="challan-paid-banner">
                 <div className="challan-paid-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -115,18 +138,18 @@ function Fees() {
                 </div>
                 <div>
                   <div className="challan-paid-title">Fee Challan Status</div>
-                  <div className="challan-paid-sub">{studentFees.status || "Paid"}</div>
+                  <div className="challan-paid-sub">{feesData.status || "Paid"}</div>
                 </div>
               </div>
 
               <div className="section-label">Challan Details</div>
 
               {[
-                { label: "Challan",   value: studentFees.challan },
-                { label: "Status",    value: studentFees.status || "Paid" },
-                { label: "Total",     value: `PKR ${studentFees.total.toLocaleString()}` },
-                { label: "Paid",      value: `PKR ${studentFees.paid.toLocaleString()}` },
-                { label: "Remaining", value: `PKR ${studentFees.remaining.toLocaleString()}` },
+                { label: "Challan",   value: feesData.challan },
+                { label: "Status",    value: feesData.status || "Paid" },
+                { label: "Total",     value: `PKR ${feesData.total.toLocaleString()}` },
+                { label: "Paid",      value: `PKR ${feesData.paid.toLocaleString()}` },
+                { label: "Remaining", value: `PKR ${feesData.remaining.toLocaleString()}` },
               ].map((item, i) => (
                 <div className="challan-detail-row" key={i}>
                   <span className="challan-detail-label">{item.label}</span>

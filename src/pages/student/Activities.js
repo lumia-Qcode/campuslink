@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
-import { activities } from "../../data/mockData";
+import { fetchActivities } from "../../services/studentApi";
 
 const Icon = ({ d, size = 18, color }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -10,7 +10,6 @@ const Icon = ({ d, size = 18, color }) => (
   </svg>
 );
 
-// Assign icon + color scheme per activity index
 const activityStyles = [
   { iconPath: "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5", colorClass: "act-green",  iconColor: "#2db87b" },
   { iconPath: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z", colorClass: "act-blue",   iconColor: "#4f8ef7" },
@@ -29,6 +28,17 @@ function getStatusClass(participation) {
 }
 
 function Activities() {
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [error, setError]           = useState(null);
+
+  useEffect(() => {
+    fetchActivities()
+      .then(data => setActivities(data.activities || []))
+      .catch(err  => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div className="app-layout">
       <Navbar />
@@ -42,30 +52,53 @@ function Activities() {
             </div>
             <div>
               <div className="page-title">Extra-Curricular Activities</div>
-              <div className="page-subtitle">{activities.length} activities enrolled</div>
+              <div className="page-subtitle">
+                {loading ? "Loading..." : `${activities.length} activities enrolled`}
+              </div>
             </div>
           </div>
 
+          {loading && (
+            <div className="card" style={{ textAlign: "center", padding: "48px 20px", color: "var(--text-muted)" }}>
+              Loading activities...
+            </div>
+          )}
+
+          {error && (
+            <div className="card" style={{ textAlign: "center", padding: "48px 20px", color: "#e53e3e" }}>
+              Failed to load activities: {error}
+            </div>
+          )}
+
+          {!loading && !error && activities.length === 0 && (
+            <div className="card" style={{ textAlign: "center", padding: "48px 20px", color: "var(--text-muted)" }}>
+              <Icon d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" size={36} color="#d1dbe8" />
+              <p style={{ marginTop: "12px", fontSize: "14px" }}>No activities enrolled</p>
+            </div>
+          )}
+
           {/* Grid */}
-          <div className="activities-grid">
-            {activities.map((act, index) => {
-              const style = activityStyles[index % activityStyles.length];
-              return (
-                <div className="activity-card" key={index}>
-                  <div className={`activity-icon-wrap ${style.colorClass}`}>
-                    <Icon d={style.iconPath} size={22} color={style.iconColor} />
+          {!loading && !error && activities.length > 0 && (
+            <div className="activities-grid">
+              {activities.map((act, index) => {
+                const style = activityStyles[index % activityStyles.length];
+                return (
+                  <div className="activity-card" key={act.id || index}>
+                    <div className={`activity-icon-wrap ${style.colorClass}`}>
+                      <Icon d={style.iconPath} size={22} color={style.iconColor} />
+                    </div>
+                    <div className="activity-info">
+                      <div className="activity-name">{act.activity}</div>
+                      <span className={`activity-status-badge ${getStatusClass(act.participation)}`}>
+                        <span className="activity-status-dot" />
+                        {act.participation}
+                      </span>
+                    </div>
                   </div>
-                  <div className="activity-info">
-                    <div className="activity-name">{act.activity}</div>
-                    <span className={`activity-status-badge ${getStatusClass(act.participation)}`}>
-                      <span className="activity-status-dot" />
-                      {act.participation}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
 
         </div>
       </main>

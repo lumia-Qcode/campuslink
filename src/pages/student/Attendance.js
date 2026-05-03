@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
-import { attendance } from "../../data/mockData";
+import { fetchAttendance } from "../../services/studentApi";
 
 const Icon = ({ d, size = 16, color }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -51,15 +51,30 @@ const SUBJECT_COLORS = ["#4f8ef7", "#9b6dff", "#2db87b", "#f5c842", "#ff6b6b", "
 const FILTERS = ["All", "Present", "Absent", "Late", "Leave"];
 
 function Attendance() {
-  const studentAttendance = attendance.find(a => a.studentId === 1);
+  const [attendanceData, setAttendanceData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("All");
   const [activeMonth, setActiveMonth] = useState("All");
 
+  useEffect(() => {
+    const params = {};
+    if (activeFilter !== "All") params.status = activeFilter;
+    if (activeMonth !== "All") params.month = activeMonth;
+    fetchAttendance(params)
+      .then(data => setAttendanceData(data))
+      .catch(() => setAttendanceData(null))
+      .finally(() => setLoading(false));
+  }, [activeFilter, activeMonth]);
+
+  const studentAttendance = attendanceData;
   const records = studentAttendance?.records || [];
-  const months = ["All", ...Array.from(new Set(records.map(r => {
+
+const months = ["All", ...new Set(records.map(r => {
     const d = new Date(r.date);
     return isNaN(d) ? null : d.toLocaleString("default", { month: "long", year: "numeric" });
-  }).filter(Boolean)))];
+  }).filter(Boolean))
+];
+
 
   const filtered = records.filter(r => {
     const statusMatch = activeFilter === "All" || r.status === activeFilter;

@@ -1,21 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import { useNavigate } from "react-router-dom";
-import {
-  announcements,
-  marks,
-  attendance,
-  fees,
-  calendar,
-  classes,
-  sections,
-  students,
-  timetable,
-  activities,
-  materials,
-  discipline,
-  progress,
-} from "../../data/mockData";
+import { fetchDashboard } from "../../services/studentApi";
 import { getUser } from "../../services/auth";
 
 // SVG icons inline
@@ -130,10 +116,31 @@ function AttendanceCircle({ percentage }) {
 function Dashboard() {
   const user = getUser();
   const navigate = useNavigate();
-  const studentMarks = marks.find((m) => m.studentId === 1);
-  const studentAttendance = attendance.find((a) => a.studentId === 1);
-  const studentFees = fees.find((f) => f.studentId === 1);
+  const [dashData, setDashData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    fetchDashboard()
+      .then(data => setDashData(data))
+      .catch(() => setDashData(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Derived from API response
+  const announcements = dashData?.announcements || [];
+  const studentMarks = { subjects: dashData?.recentMarks || [] };
+  const studentAttendance = {
+    overall: dashData?.attendance?.overall || 85,
+    subjects: dashData?.attendance?.subjects || [],
+  };
+  const studentFees = {
+    challan: "Spring 2026",
+    status:  dashData?.stats?.feeStatus || "Paid",
+    total:   25000,
+    paid:    dashData?.stats?.feeStatus === "Paid" ? 25000 : 0,
+    remaining: dashData?.stats?.feeStatus === "Paid" ? 0 : 25000,
+  };
+  const progress = dashData?.student ? [] : [];
 
   const tagColors = { urgent: "tag-urgent", event: "tag-event", info: "tag-info" };
   const tagLabels = { urgent: "Urgent", event: "Event", info: "Info" };
@@ -214,9 +221,12 @@ function Dashboard() {
             <div>
               <div className="stat-mini-label">Avg. Marks</div>
               <div className="stat-mini-value">
-                {studentMarks
-                  ? Math.round(studentMarks.subjects.reduce((a, s) => a + (s.marks / s.total) * 100, 0) / studentMarks.subjects.length)
-                  : 88}%
+                {dashData?.stats?.avgMarks !== undefined && dashData.stats.avgMarks !== null
+                  ? dashData.stats.avgMarks
+                  : (studentMarks.subjects.length
+                    ? Math.round(studentMarks.subjects.reduce((a, s) => a + (s.percentage || (s.marks / s.total * 100)), 0) / studentMarks.subjects.length)
+                    : 88)
+                }%
               </div>
             </div>
           </div>
@@ -320,7 +330,7 @@ function Dashboard() {
               <tbody>
                 {studentMarks?.subjects.map((sub, i) => (
                   <tr key={i}>
-                    <td className="subject-col">{sub.name}</td>
+                    <td className="subject-col">{sub.subject || sub.name}</td>
                     <td className="component-col">{sub.component}</td>
                     <td>
                       <span className={`marks-badge ${getMarkBadge(sub.marks, sub.total)}`}>
@@ -425,7 +435,7 @@ function Dashboard() {
               </div>
             </div>
             <div style={{ marginTop: "4px" }}>
-              {progress.map((item, i) => (
+              {(dashData?.progress || []).map((item, i) => (
                 <div key={i} className="progress-item">
                   <span className="progress-label">{item.category}</span>
                   <span className={`progress-badge ${item.level}`}>{item.rating}</span>

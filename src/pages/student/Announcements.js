@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
-import { announcements } from "../../data/mockData";
+import { fetchAnnouncements } from "../../services/studentApi";
+
 
 const Icon = ({ d, size = 16, color }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -55,8 +56,17 @@ function AnnouncementCard({ a, index }) {
 }
 
 function Announcements() {
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("All");
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetchAnnouncements()
+      .then(data => setAnnouncements(data.announcements || []))
+      .catch(() => setAnnouncements([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   const filtered = announcements.filter((a) => {
     const tagMatch = activeFilter === "All" || a.tag?.toLowerCase() === activeFilter.toLowerCase();

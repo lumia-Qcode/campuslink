@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
-import { marks } from "../../data/mockData";
+import { fetchMarks } from "../../services/studentApi";
 
 const Icon = ({ d, size = 16, color }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
@@ -44,14 +44,21 @@ const SUBJECT_COLORS = ["#4f8ef7", "#9b6dff", "#2db87b", "#f5c842", "#ff6b6b", "
 const COMPONENTS = ["All", "MidTerm - I", "MidTerm - II", "Final", "Quiz", "Assignment"];
 
 function Marks() {
-  const studentMarks = marks.find(m => m.studentId === 1);
-  const subjects = studentMarks?.subjects || [];
+  const [subjects, setSubjects] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeComponent, setActiveComponent] = useState("All");
   const [sortBy, setSortBy] = useState("default");
 
-  // Group subjects
+  useEffect(() => {
+    fetchMarks({ component: activeComponent === "All" ? undefined : activeComponent })
+      .then(data => setSubjects(data.marks || []))
+      .catch(() => setSubjects([]))
+      .finally(() => setLoading(false));
+  }, [activeComponent]);
+
+  // Group subjects — API returns {subject, marks, total, component, ...}
   const grouped = subjects.reduce((acc, sub) => {
-    const key = sub.name;
+    const key = sub.subject || sub.name;
     if (!acc[key]) acc[key] = [];
     acc[key].push(sub);
     return acc;
@@ -68,10 +75,10 @@ function Marks() {
     return { name, entries, totalMarks, totalMax, pct, color: SUBJECT_COLORS[i % SUBJECT_COLORS.length] };
   });
 
-  // Filter rows
-  const filteredSubjects = subjects.filter(s =>
-    activeComponent === "All" || s.component === activeComponent
-  );
+  // Filter rows — normalise subject/name field
+  const filteredSubjects = subjects
+    .map(s => ({ ...s, name: s.name || s.subject }))
+    .filter(s => activeComponent === "All" || s.component === activeComponent);
 
   const sortedSubjects = [...filteredSubjects].sort((a, b) => {
     if (sortBy === "high") return (b.marks / b.total) - (a.marks / a.total);
