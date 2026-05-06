@@ -2208,16 +2208,16 @@ body {
    ═══════════════════════════════════════════════════════════ */
 
 .admin-sidebar .sidebar-logo-name span {
-  color: #9b6dff;
+  color: #6299d0;
 }
 
 .admin-nav-item:hover {
   background: #f5f3ff;
-  color: #7c3aed;
+  color: #6299d0; 
 }
 
 .admin-nav-item.admin-active {
-  background: linear-gradient(135deg, #9b6dff, #7c3aed) !important;
+  background: linear-gradient(135deg, #6299d0 ,  #d1d871) !important;
   color: #fff !important;
   box-shadow: 0 4px 12px rgba(155, 109, 255, 0.35) !important;
 }

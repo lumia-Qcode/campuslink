@@ -16,7 +16,7 @@ const statCards = [
     label: "Total Students",
     value: mockStudents.length,
     icon: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75",
-    color: "#9b6dff", bg: "#f5f3ff",
+    color: "#6299d0", bg: "#f5f3ff",
   },
   {
     label: "Total Teachers",
@@ -54,7 +54,7 @@ function AdminDashboard() {
       <AdminNavbar />
       <main className="main-content">
         {/* Hero Banner */}
-        <div className="hero-banner" style={{ background: "linear-gradient(135deg, #5b21b6 0%, #7c3aed 50%, #9b6dff 100%)" }}>
+        <div className="hero-banner" style={{ background: "linear-gradient(135deg, #b2cee2 0%, #6299d0 50%, #d1d871 100%)" }}>
           <div>
             <div className="hero-greeting">Good morning Mr Tariq 👋</div>
             <div className="hero-date">

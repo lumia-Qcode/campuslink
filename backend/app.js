@@ -3,7 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
-
+const adminRoutes = require('./src/infrastructure/web/routes/adminRoutes');
 const authRoutes    = require('./src/infrastructure/web/routes/authRoutes');
 const studentRoutes = require('./src/infrastructure/web/routes/studentRoutes');
 const teacherRoutes = require('./src/infrastructure/web/routes/teacherRoutes');
@@ -57,7 +57,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth',    authLimiter, authRoutes);
 app.use('/api/student', studentRoutes);
 app.use('/api/teacher', teacherRoutes);
-
+app.use('/api/admin', adminRoutes);
 // ── 404 handler ──
 app.use(notFound);
 
