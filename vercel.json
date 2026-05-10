@@ -1,14 +1,8 @@
 {
-  "framework": "services",
-  "experimentalServices": {
-    "frontend": {
-      "entrypoint": "frontend", 
-      "routePrefix": "/",
-      "framework": "create-react-app"
-    },
-    "backend": {
-      "entrypoint": "backend",
-      "routePrefix": "/api"
-    }
-  }
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/backend/$1" },
+    { "source": "/(.*)", "destination": "/frontend/$1" }
+  ]
 }
+
