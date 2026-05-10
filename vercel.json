@@ -2,7 +2,7 @@
   "framework": "services",
   "experimentalServices": {
     "frontend": {
-      "entrypoint": "client", 
+      "entrypoint": "frontend", 
       "routePrefix": "/",
       "framework": "create-react-app"
     },
