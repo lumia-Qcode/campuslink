@@ -7,10 +7,16 @@ class MongoMarksRepository {
       .lean();
   }
 
-  async findByClassSection(classId, section) {
+  // alias used by MarksUseCases.getMarksForClass
+  async findByClass(classId, section) {
     return MarksModel.find({ classId, section })
       .populate('studentId', 'name rollNo studentId')
       .lean();
+  }
+
+  // keep old name as alias too
+  async findByClassSection(classId, section) {
+    return this.findByClass(classId, section);
   }
 
   /** Used by student portal — all marks for this student, with teacher ref */
@@ -21,7 +27,8 @@ class MongoMarksRepository {
       .lean();
   }
 
-  async saveBatch(records) {
+  // called by MarksUseCases.saveMarks
+  async saveMarksBatch(records) {
     const ops = records.map(r => ({
       updateOne: {
         filter: { studentId: r.studentId, subject: r.subject, component: r.component },
@@ -30,6 +37,11 @@ class MongoMarksRepository {
       },
     }));
     return MarksModel.bulkWrite(ops);
+  }
+
+  // keep old name as alias
+  async saveBatch(records) {
+    return this.saveMarksBatch(records);
   }
 }
 

@@ -1,39 +1,39 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/Login";
-import Signup from "./components/Signup";
 import { isAuthenticated, getUserRole } from "./services/auth";
 
 // Student Pages
 import StudentDashboard from "./pages/student/Dashboard";
-import Announcements from "./pages/student/Announcements";
-import Attendance from "./pages/student/Attendance";
-import Marks from "./pages/student/Marks";
-import Timetable from "./pages/student/Timetable";
-import Fees from "./pages/student/Fees";
-import Activities from "./pages/student/Activities";
-import Materials from "./pages/student/Materials";
-import Calendar from "./pages/student/Calendar";
+import Announcements    from "./pages/student/Announcements";
+import Attendance       from "./pages/student/Attendance";
+import Marks            from "./pages/student/Marks";
+import Timetable        from "./pages/student/Timetable";
+import Fees             from "./pages/student/Fees";
+import Activities       from "./pages/student/Activities";
+import Materials        from "./pages/student/Materials";
+import Calendar         from "./pages/student/Calendar";
 
 // Teacher Pages
-import TeacherDashboard from "./pages/teacher/TeacherDashboard";
-import TeacherAttendance from "./pages/teacher/TeacherAttendance";
-import TeacherMarks from "./pages/teacher/TeacherMarks";
-import TeacherTimetable from "./pages/teacher/TeacherTimeTable";
-import TeacherMaterials from "./pages/teacher/TeacherMaterials";
+import TeacherDashboard     from "./pages/teacher/TeacherDashboard";
+import TeacherAttendance    from "./pages/teacher/TeacherAttendance";
+import TeacherMarks         from "./pages/teacher/TeacherMarks";
+import TeacherTimetable     from "./pages/teacher/TeacherTimeTable";
+import TeacherMaterials     from "./pages/teacher/TeacherMaterials";
 import TeacherAnnouncements from "./pages/teacher/TeacherAnnouncement";
-import TeacherStudents from "./pages/teacher/TeacherStudents";
-import TeacherCalendar from "./pages/teacher/TeacherCalendar";
+import TeacherStudents      from "./pages/teacher/TeacherStudents";
+import TeacherCalendar      from "./pages/teacher/TeacherCalendar";
 
 // Admin Pages
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminStudents from "./pages/admin/AdminStudents";
-import AdminTeachers from "./pages/admin/AdminTeachers";
-import AdminSections from "./pages/admin/AdminSections";
-import AdminFees from "./pages/admin/AdminFees";
+import AdminDashboard     from "./pages/admin/AdminDashboard";
+import AdminStudents      from "./pages/admin/AdminStudents";
+import AdminTeachers      from "./pages/admin/AdminTeachers";
+import AdminSections      from "./pages/admin/AdminSections";
+import AdminFees          from "./pages/admin/AdminFees";
 import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
-import AdminTimetable from "./pages/admin/AdminTimetable";
-import AdminFinancialAid from "./pages/admin/AdminFinancialAid";
+import AdminTimetable     from "./pages/admin/AdminTimetable";
+import AdminCalendar      from "./pages/admin/AdminCalendar";
+
 
 import './index.css';
 
@@ -47,9 +47,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Auth */}
+        {/* Auth — login only, no signup */}
         <Route path="/" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
 
         {/* ─── STUDENT ROUTES ─── */}
         <Route path="/student/dashboard"     element={<ProtectedRoute role="student"><StudentDashboard /></ProtectedRoute>} />
@@ -70,7 +69,7 @@ function App() {
         <Route path="/admin/fees"          element={<ProtectedRoute role="admin"><AdminFees /></ProtectedRoute>} />
         <Route path="/admin/announcements" element={<ProtectedRoute role="admin"><AdminAnnouncements /></ProtectedRoute>} />
         <Route path="/admin/timetable"     element={<ProtectedRoute role="admin"><AdminTimetable /></ProtectedRoute>} />
-        <Route path="/admin/financial-aid" element={<ProtectedRoute role="admin"><AdminFinancialAid /></ProtectedRoute>} />
+        <Route path="/admin/calendar"      element={<ProtectedRoute role="admin"><AdminCalendar /></ProtectedRoute>} />
 
         {/* ─── TEACHER ROUTES ─── */}
         <Route path="/teacher/dashboard"     element={<ProtectedRoute role="teacher"><TeacherDashboard /></ProtectedRoute>} />
@@ -81,6 +80,9 @@ function App() {
         <Route path="/teacher/announcements" element={<ProtectedRoute role="teacher"><TeacherAnnouncements /></ProtectedRoute>} />
         <Route path="/teacher/students"      element={<ProtectedRoute role="teacher"><TeacherStudents /></ProtectedRoute>} />
         <Route path="/teacher/calendar"      element={<ProtectedRoute role="teacher"><TeacherCalendar /></ProtectedRoute>} />
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );

@@ -5,7 +5,7 @@ const Fee = require('../../../domain/entities/Fee');
  */
 class FeeUseCases {
   constructor(feeRepository, studentRepository) {
-    this.feeRepository     = feeRepository;
+    this.feeRepository = feeRepository;
     this.studentRepository = studentRepository;
   }
 
@@ -15,7 +15,11 @@ class FeeUseCases {
 
   async getFeeById(id) {
     const fee = await this.feeRepository.findById(id);
-    if (!fee) throw new Error('Fee record not found');
+
+    if (!fee) {
+      throw new Error('Fee record not found');
+    }
+
     return fee;
   }
 
@@ -27,17 +31,21 @@ class FeeUseCases {
     const { studentId, month, dueDate, status } = data;
 
     const student = await this.studentRepository.findById(studentId);
-    if (!student) throw new Error('Student not found');
+
+    if (!student) {
+      throw new Error('Student not found');
+    }
 
     // Apply domain fee formula if amount not provided
-    const amount = data.amount || Fee.calculateAmount(student.classId);
+    const amount =
+      data.amount || Fee.calculateAmount(student.classId);
 
     return this.feeRepository.create({
-      studentId:   student._id,
+      studentId: student._id,
       studentName: student.name,
       studentCode: student.studentId,
-      classId:     student.classId,
-      section:     student.section,
+      classId: student.classId,
+      section: student.section,
       month,
       amount,
       dueDate: new Date(dueDate),
@@ -47,48 +55,92 @@ class FeeUseCases {
 
   async markAsPaid(id) {
     const fee = await this.feeRepository.findById(id);
-    if (!fee) throw new Error('Fee record not found');
+
+    if (!fee) {
+      throw new Error('Fee record not found');
+    }
+
     return this.feeRepository.update(id, {
-      status:   'Paid',
+      status: 'Paid',
       paidDate: new Date(),
     });
   }
 
   async markAsOverdue(id) {
     const fee = await this.feeRepository.findById(id);
-    if (!fee) throw new Error('Fee record not found');
-    return this.feeRepository.update(id, { status: 'Overdue' });
+
+    if (!fee) {
+      throw new Error('Fee record not found');
+    }
+
+    return this.feeRepository.update(id, {
+      status: 'Overdue',
+    });
   }
 
   async updateFee(id, data) {
     const fee = await this.feeRepository.findById(id);
-    if (!fee) throw new Error('Fee record not found');
+
+    if (!fee) {
+      throw new Error('Fee record not found');
+    }
+
     return this.feeRepository.update(id, data);
   }
 
   async deleteFee(id) {
     const fee = await this.feeRepository.findById(id);
-    if (!fee) throw new Error('Fee record not found');
+
+    if (!fee) {
+      throw new Error('Fee record not found');
+    }
+
     return this.feeRepository.delete(id);
   }
 
   /**
-   * Batch generate fees for all students for a given month.
+   * Batch generate fees for all students for a given month
    */
   async generateMonthlyFees(month, dueDate) {
-    if (!month || !dueDate) throw new Error('Month and due date are required');
-    const generated = await this.feeRepository.generateMonthlyFees(month, dueDate);
-    return { count: generated.length, records: generated };
+    if (!month || !dueDate) {
+      throw new Error('Month and due date are required');
+    }
+
+    const generated =
+      await this.feeRepository.generateMonthlyFees(
+        month,
+        dueDate
+      );
+
+    return {
+      count: generated.inserted,
+    };
   }
 
   async getMonths() {
-    return this.feeRepository.getMonths();
+    return this.feeRepository.getDistinctMonths();
   }
 
   async getFeeFormula() {
     return {
-      aboveGrade5: { classes: ['6', '7', '8', '9', 'X'], amount: 50000 },
-      upToGrade5:  { classes: ['playgroup', 'prenursery', 'nursery', '1', '2', '3', '4', '5'], amount: 40000 },
+      aboveGrade5: {
+        classes: ['6', '7', '8', '9', 'X'],
+        amount: 50000,
+      },
+
+      upToGrade5: {
+        classes: [
+          'playgroup',
+          'prenursery',
+          'nursery',
+          '1',
+          '2',
+          '3',
+          '4',
+          '5',
+        ],
+        amount: 40000,
+      },
     };
   }
 }

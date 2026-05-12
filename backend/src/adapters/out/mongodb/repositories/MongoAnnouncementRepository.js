@@ -5,15 +5,21 @@ class MongoAnnouncementRepository {
     const query = {};
     if (filters.role)    query.targetRoles = filters.role;
     if (filters.pinned)  query.pinned = true;
-    return AnnouncementModel.find(query).sort({ createdAt: -1 }).lean();
+    return AnnouncementModel.find(query)
+      .populate('postedBy', 'role name username')
+      .sort({ createdAt: -1 }).lean();
   }
 
   async findById(id) {
-    return AnnouncementModel.findById(id).lean();
+    return AnnouncementModel.findById(id)
+      .populate('postedBy', 'role name username')
+      .lean();
   }
 
   async findByRole(role) {
-    return AnnouncementModel.find({ targetRoles: role }).sort({ createdAt: -1 }).lean();
+    return AnnouncementModel.find({ targetRoles: role })
+      .populate('postedBy', 'role name username')
+      .sort({ createdAt: -1 }).lean();
   }
 
   /**

@@ -49,6 +49,14 @@ class AnnouncementController {
 
   delete = async (req, res, next) => {
     try {
+      // Teachers can only delete their own announcements; admins can delete any
+      if (req.user.role === 'teacher') {
+        const ann = await this.announcementUseCases.getAnnouncementById(req.params.id);
+        if (!ann) return res.status(404).json({ success: false, message: 'Announcement not found' });
+        if (String(ann.postedBy) !== String(req.user.id)) {
+          return res.status(403).json({ success: false, message: 'Cannot delete another user\'s announcement' });
+        }
+      }
       await this.announcementUseCases.deleteAnnouncement(req.params.id);
       res.json({ success: true, message: 'Announcement deleted' });
     } catch (err) {
